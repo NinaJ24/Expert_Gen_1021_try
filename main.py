@@ -143,6 +143,15 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+        # **将上传 & 粘贴按钮放到输入框的上方**
+with st.container():
+    col1, col2 = st.columns([0.7, 0.3])  # 让上传按钮和粘贴按钮放在同一行
+    with col1:
+        uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"], accept_multiple_files=False)
+    with col2:
+        paste_result = st.button("📋 Paste an image")  # Streamlit button 代替 pbutton
+if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
+    uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 
 
 
@@ -188,13 +197,13 @@ def process_input(uploaded_file=None, prompt=""):
 
 
 
-uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+# uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 
-paste_result = pbutton("📋 Paste an image")
+# paste_result = pbutton("📋 Paste an image")
 
 
-if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
-    uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+# if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
+#     uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 # prompt = st.chat_input("Ask your query about civil engineering")
 # combined_prompt = process_input(uploaded_file=uploaded_file, prompt=prompt)
 
