@@ -163,9 +163,9 @@ if uploaded_file:
     # print(f'Image description extracted: {image_description}')  # Debug print - 0310
     st.session_state.messages.append({"role": "user", "content": "[Uploaded Image]"})  # Store uploaded image reference in chat history - 0310
     st.session_state.messages.append({"role": "assistant", "content": image_description})  # Store GPT-4o-generated image description in chat history - 0310
-    
+    answer = get_response_content(image_description)
     with st.chat_message("assistant"):
-        st.markdown(image_description)
+        st.markdown(answer)
 
 
 
