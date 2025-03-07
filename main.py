@@ -56,7 +56,7 @@ def describe_image(image_bytes):  # Function to generate detailed descriptions o
 
         max_tokens=300
     )
-    print(f'Extracted text from image: {result}')  # Debug print - 0310
+    print(f'Extracted text from image: {response.choices[0].message.content}')  # Debug print - 0310
     return response.choices[0].message.content  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
 
 
