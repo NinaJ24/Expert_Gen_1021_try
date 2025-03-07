@@ -31,7 +31,7 @@ OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']  # Added to authenticate OpenAI GP
 pc = Pinecone(api_key=PINECONE_API_KEY)
 assistant = pc.assistant.Assistant(assistant_name="example-assistant2")
 client = openai(
-    api_key=os.environ.get("OPENAI_API_KEY"),  # This is the default and can be omitted
+    api_key=OPENAI_API_KEY,  # This is the default and can be omitted
 )
 
 
