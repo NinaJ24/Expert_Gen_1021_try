@@ -88,6 +88,7 @@ def describe_image(uploaded_file):
         ],
     )
 
+        st.session_state.uploaded_file = None # added to clear
         return response.choices[0].message.content  # Return AI-generated response
 
     except Exception as e:
@@ -104,9 +105,9 @@ def get_response_content(query):
     answer = resp.get("message", {}).get("content", "")
 
     # Output and return the content part
-    print(answer)
+    # print(answer)
     # display(Markdown(content_text))
-    print(f'get_response_content: {answer}')  # Debug print - 0310
+    # print(f'get_response_content: {answer}')  # Debug print - 0310
     return answer
 
 
