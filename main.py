@@ -64,9 +64,9 @@ def describe_image(image_path):  # Updated to use file path instead of raw bytes
     print(f'Function describe_image called with image bytes: {len(image_bytes)} bytes')  # Debug print - 0310  # Function to extract questions, images, and tables from images - 0310
     with open(image_path, "rb") as image_file:
         image_base64 = base64.b64encode(image_file.read()).decode("utf-8")  # Encode image from path - 0310  # Convert image to base64 - 0310
-    print('GPT-4o API called for image processing')  # Debug print - 0310
+    # print('GPT-4o API called for image processing')  # Debug print - 0310
     response = client.chat.completions.create(
-        print('GPT-4o API called for image processing')  # Debug print - 0310
+        # print('GPT-4o API called for image processing')  # Debug print - 0310
         model="gpt-4o",
         messages=[
             {"role": "user", "content": [
@@ -77,7 +77,7 @@ def describe_image(image_path):  # Updated to use file path instead of raw bytes
         max_tokens=300
     )
     result = response.choices[0].message.content  # Ensure result is defined before printing - 0310
-    print(f'Extracted text from image: {result}')  # Debug print - 0310
+    # print(f'Extracted text from image: {result}')  # Debug print - 0310
     return result  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
 
 def get_response_content(query):
