@@ -18,14 +18,6 @@ from openai import OpenAI
 import base64  # Added to handle image conversion for GPT-4o - 0310
 
 
-# # paste_result = pbutton("📋 Paste an image")
-
-# if paste_result.image_data is not None:
-#     st.write('Pasted image:')
-#     st.image(paste_result.image_data)
-
-
-
 load_dotenv()
 
 PINECONE_API_KEY = st.secrets['PINECONE_API_KEY']
@@ -52,7 +44,7 @@ client = OpenAI(
 def describe_image(image_bytes):  # Function to generate detailed descriptions of images using GPT-4o - 0310
     image_base64 = base64.b64encode(image_bytes).decode("utf-8")  # Convert image to base64
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         # messages=[
         #     {"role": "system", "content": "You are an AI that describes images in great detail."},
         #     {"role": "user", "content": f"Describe this image in detail. Here is the image data: {image_base64}"},
