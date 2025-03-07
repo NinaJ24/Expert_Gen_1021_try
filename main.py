@@ -56,6 +56,7 @@ def describe_image(image_bytes):  # Function to generate detailed descriptions o
 
         max_tokens=300
     )
+    print(f'Extracted text from image: {result}')  # Debug print - 0310
     return response.choices[0].message.content  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
 
 
@@ -72,7 +73,7 @@ def get_response_content(query):
     # Output and return the content part
     print(answer)
     # display(Markdown(content_text))
-
+    print(f'get_response_content: {answer}')  # Debug print - 0310
     return answer
 
 
@@ -129,6 +130,7 @@ if uploaded_file:
         image_bytes = uploaded_file.getvalue()  # Handle uploaded file correctly - 0310
     # No need to call getvalue() again as image_bytes is already bytes - 0310
     image_description = describe_image(image_bytes)
+    print(f'Image description extracted: {image_description}')  # Debug print - 0310
     st.session_state.messages.append({"role": "user", "content": "[Uploaded Image]"})  # Store uploaded image reference in chat history - 0310
     st.session_state.messages.append({"role": "assistant", "content": image_description})  # Store GPT-4o-generated image description in chat history - 0310
     
@@ -183,4 +185,5 @@ if prompt := st.chat_input("Ask your query about civil engineering"):
     thinking_placeholder.markdown(answer)
 
     # Add assistant response to chat history
+    print(f'Final response generated: {answer}')  # Debug print - 0310
     st.session_state.messages.append({"role": "assistant", "content": answer})
