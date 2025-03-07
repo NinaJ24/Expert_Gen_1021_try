@@ -101,7 +101,9 @@ if uploaded_file:
         image = Image.open(uploaded_file)  # Ensure compatibility with both uploaded and pasted images - 0310
     else:
         image = uploaded_file  # Directly use pasted images which are already PIL objects - 0310
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+    # st.image(image, caption="Uploaded Image", use_column_width=True)
+    st.image(image, caption="Uploaded Image", use_container_width=True)  # Updated per Streamlit API recommendation - 0310
+
     
     image_bytes = io.BytesIO()  # Convert image to bytes for processing - 0310
     if isinstance(uploaded_file, Image.Image):
