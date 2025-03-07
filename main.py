@@ -127,6 +127,132 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 
+
+# -----------------------------Process input
+
+# def process_input(uploaded_file, prompt):
+#         # print('File uploaded successfully')  # Debug print - 0310
+#     image_description = []
+    
+#         if isinstance(uploaded_file, io.BytesIO):
+#             image = Image.open(uploaded_file)
+#         else:
+#             image = uploaded_file
+#         st.image(image, caption="Uploaded Image", use_container_width=True)
+        
+#         image_bytes = io.BytesIO()
+#         if isinstance(uploaded_file, Image.Image):
+#             uploaded_file.save(image_bytes, format='PNG')
+#         else:
+#             image_bytes.write(uploaded_file.getvalue())
+#         image_bytes = image_bytes.getvalue()
+        
+#         image_description = describe_image(image_bytes)
+
+# combined_prompt = image_description + prompt
+
+def process_input(uploaded_file=None, prompt=""):
+    """
+    Processes both an uploaded image and a text input, combining them before sending to the AI assistant.
+
+    Args:
+        uploaded_file (File-like object, optional): Uploaded or pasted image.
+        prompt (str, optional): Text input from the user.
+
+    Returns:
+        None (displays responses directly in Streamlit UI)
+    """
+    image_description = ""  # Variable to store extracted text from image
+
+    # Step 1: Process Uploaded Image
+    if uploaded_file:
+        if isinstance(uploaded_file, io.BytesIO):
+            image = Image.open(uploaded_file)
+        else:
+            image = uploaded_file  # Directly use pasted images if they are already PIL objects
+
+        # Display the uploaded image
+        st.image(image, caption="Uploaded Image", use_container_width=True)
+
+        # Convert image to bytes for processing
+        image_bytes = io.BytesIO()
+        if isinstance(image, Image.Image):  
+            image.save(image_bytes, format="PNG")
+        else:
+            image_bytes.write(uploaded_file.getvalue())
+        image_bytes = image_bytes.getvalue()
+
+        # Extract text, tables, and figures from the image using GPT-4o
+        image_description = describe_image(image_bytes)
+
+        # Store extracted content in chat history
+        st.session_state.messages.append({"role": "assistant", "content": f"**Extracted Content from Image:**\n{image_description}"})
+
+        # Display extracted content
+        with st.chat_message("assistant"):
+            st.markdown(f"**Extracted Content from Image:**\n\n{image_description}")
+
+    # Step 2: Combine Extracted Image Text with User Prompt
+    combined_prompt = f"{image_description}\n\nUser Query: {prompt}".strip() if image_description else prompt
+
+return combined_prompt  # Only return the combined prompt
+
+# -----------alternative Upload----------------
+# if uploaded_file:
+#     if isinstance(uploaded_file, io.BytesIO):
+#         image = Image.open(uploaded_file)  # Ensure compatibility with both uploaded and pasted images - 0310
+#     else:
+#         image = uploaded_file  # Directly use pasted images which are already PIL objects - 0310
+#     # st.image(image, caption="Uploaded Image", use_column_width=True)
+#     st.image(image, caption="Uploaded Image", use_container_width=True)  # Updated per Streamlit API recommendation - 0310
+
+    
+#     # image_bytes = io.BytesIO()  # Convert image to bytes for processing - 0310
+#     # Convert image to bytes for processing
+#     image_buffer = io.BytesIO()
+#     if isinstance(image, Image.Image):  # Ensure correct image format conversion
+#         image.save(image_buffer, format="PNG")  
+#         image_bytes = image_buffer.getvalue()  # Get bytes from saved image
+#     else:
+#         image_bytes = uploaded_file.getvalue()  # Directly read bytes if uploaded as file
+#     image_description = describe_image(image_bytes)
+#     # print(f'Image description extracted: {image_description}')  # Debug print - 0310
+#     st.session_state.messages.append({"role": "user", "content": "[Uploaded Image]"})  # Store uploaded image reference in chat history - 0310
+#     st.session_state.messages.append({"role": "assistant", "content": image_description})  # Store GPT-4o-generated image description in chat history - 0310
+#     answer = get_response_content(image_description)
+#     with st.chat_message("assistant"):
+#         st.markdown(answer)
+
+# --------alternative upload only-------
+# -----------previous final output-----------
+
+# if prompt := st.chat_input("Ask your query about civil engineering"):
+#     # Add user message to chat history
+#     enhanced_prompt = f"{prompt} Explain why and also provide me the source cited text"
+#     # st.session_state.messages.append({"role": "user", "content": prompt})
+#     st.session_state.messages.append({"role": "user", "content": enhanced_prompt})
+
+#     # Display user message in chat message container
+#     with st.chat_message("user"):
+#         st.markdown(prompt)
+
+#     # Display "I am thinking..." placeholder in assistant's response
+#     with st.chat_message("assistant"):
+#         thinking_placeholder = st.empty()
+#         thinking_placeholder.markdown("I am thinking...")
+
+#     # Generate actual response
+#     # answer = get_response_content(prompt)
+#     answer = get_response_content(enhanced_prompt)
+
+#     # Update the placeholder with the actual response
+#     thinking_placeholder.markdown(answer)
+
+#     # Add assistant response to chat history
+#     print(f'Final response generated: {answer}')  # Debug print - 0310
+#     st.session_state.messages.append({"role": "assistant", "content": answer})
+
+
 uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 
 paste_result = pbutton("📋 Paste an image")
@@ -134,59 +260,25 @@ paste_result = pbutton("📋 Paste an image")
 
 if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
     uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+prompt = st.chat_input("Ask your query about civil engineering")
+combined_prompt = process_input(uploaded_file=uploaded_file, prompt=prompt)
 
-if uploaded_file:
-    if isinstance(uploaded_file, io.BytesIO):
-        image = Image.open(uploaded_file)  # Ensure compatibility with both uploaded and pasted images - 0310
-    else:
-        image = uploaded_file  # Directly use pasted images which are already PIL objects - 0310
-    # st.image(image, caption="Uploaded Image", use_column_width=True)
-    st.image(image, caption="Uploaded Image", use_container_width=True)  # Updated per Streamlit API recommendation - 0310
-
-    
-    # image_bytes = io.BytesIO()  # Convert image to bytes for processing - 0310
-    # Convert image to bytes for processing
-    image_buffer = io.BytesIO()
-    if isinstance(image, Image.Image):  # Ensure correct image format conversion
-        image.save(image_buffer, format="PNG")  
-        image_bytes = image_buffer.getvalue()  # Get bytes from saved image
-    else:
-        image_bytes = uploaded_file.getvalue()  # Directly read bytes if uploaded as file
-
-    
-    # if isinstance(uploaded_file, Image.Image):
-    #     uploaded_file.save(image_bytes, format='PNG')  # Ensure correct format conversion for pasted images - 0310
-    # else:
-    #     image_bytes = uploaded_file.getvalue()  # Handle uploaded file correctly - 0310
-    # # No need to call getvalue() again as image_bytes is already bytes - 0310
-    image_description = describe_image(image_bytes)
-    # print(f'Image description extracted: {image_description}')  # Debug print - 0310
-    st.session_state.messages.append({"role": "user", "content": "[Uploaded Image]"})  # Store uploaded image reference in chat history - 0310
-    st.session_state.messages.append({"role": "assistant", "content": image_description})  # Store GPT-4o-generated image description in chat history - 0310
-    answer = get_response_content(image_description)
-    with st.chat_message("assistant"):
-        st.markdown(answer)
-
-
-
-if prompt := st.chat_input("Ask your query about civil engineering"):
+if combined_prompt.strip():  # Ensure we only proceed if there is valid input
     # Add user message to chat history
-    enhanced_prompt = f"{prompt} Explain why and also provide me the source cited text"
-    # st.session_state.messages.append({"role": "user", "content": prompt})
+    enhanced_prompt = f"{combined_prompt} Explain why and also provide me the source cited text"
     st.session_state.messages.append({"role": "user", "content": enhanced_prompt})
 
     # Display user message in chat message container
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.markdown(prompt if prompt else "[Uploaded Image]")  # Show text prompt or an image placeholder
 
     # Display "I am thinking..." placeholder in assistant's response
     with st.chat_message("assistant"):
         thinking_placeholder = st.empty()
         thinking_placeholder.markdown("I am thinking...")
 
-    # Generate actual response
-    # answer = get_response_content(prompt)
-    answer = get_response_content(enhanced_prompt)
+    # Generate actual response using the assistant
+    answer = get_response_content(enhanced_prompt)  # Use the processed combined prompt
 
     # Update the placeholder with the actual response
     thinking_placeholder.markdown(answer)
