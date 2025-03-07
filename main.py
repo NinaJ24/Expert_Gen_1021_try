@@ -65,17 +65,37 @@ def describe_image(image_path):  # Updated to use file path instead of raw bytes
     with open(image_path, "rb") as image_file:
         image_base64 = base64.b64encode(image_file.read()).decode("utf-8")  # Encode image from path - 0310  # Convert image to base64 - 0310
     # print('GPT-4o API called for image processing')  # Debug print - 0310
+    # response = client.chat.completions.create(
+    #     # print('GPT-4o API called for image processing')  # Debug print - 0310
+    #     model="gpt-4o",
+    #     messages=[
+    #         {
+    #             "role": "user", "content": [
+    #             {
+    #                 "type": "text", "text": "You are an AI specialized in extracting text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible."},
+    #             {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}},
+    #         ]},
+    #     ]  # Updated to follow structured OpenAI vision format - 0310,  # Updated to ensure only structured content is extracted without additional descriptions - 0310  # Updated to focus on extracting structured content - 0310  # Updated to pass image data to GPT-4o - 0310
+    #     max_tokens=300
+    # )
     response = client.chat.completions.create(
-        # print('GPT-4o API called for image processing')  # Debug print - 0310
-        model="gpt-4o",
-        messages=[
-            {"role": "user", "content": [
-                {"type": "text", "text": "You are an AI specialized in extracting text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible."},
-                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}},
-            ]},
-        ]  # Updated to follow structured OpenAI vision format - 0310,  # Updated to ensure only structured content is extracted without additional descriptions - 0310  # Updated to focus on extracting structured content - 0310  # Updated to pass image data to GPT-4o - 0310
-        max_tokens=300
-    )
+    model="gpt-4o-mini",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "You are an AI specialized in extracting text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible.",
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                },
+            ],
+        }
+    ],
+)
     result = response.choices[0].message.content  # Ensure result is defined before printing - 0310
     # print(f'Extracted text from image: {result}')  # Debug print - 0310
     return result  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
