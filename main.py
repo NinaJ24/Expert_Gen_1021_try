@@ -88,7 +88,8 @@ for message in st.session_state.messages:
 uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 
 # paste_result = pbutton("📋 Paste an image")  # Updated to use correct function for pasting images - 0310
-paste_result = spb.paste_image_button("📋 Paste an image")  # Ensured unique key to prevent StreamlitDuplicateElementKey issue - 0310
+# paste_result = spb.paste_image_button("📋 Paste an image")  # Ensured unique key to prevent StreamlitDuplicateElementKey issue - 0310
+paste_result = pbutton("📋 Paste an image")
 
 
 if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
