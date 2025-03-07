@@ -60,7 +60,19 @@ def describe_image(uploaded_file):
 
         # Send image to GPT-4o Vision model
         # base64_image = encode_image(image_bytes)  
-        image_bytes = uploaded_file.read()
+
+        image = Image.open(uploaded_file)
+# -------------------convert to legal format------
+        # Ensure the image is in a supported format
+        if image.mode in ("RGBA", "P"):  # Convert images with transparency to RGB
+            image = image.convert("RGB")
+
+        # Save the image as a clean, standard PNG or JPEG
+        image_buffer = io.BytesIO()
+        image.save(image_buffer, format="PNG")  # Ensure valid PNG format
+        image_bytes = image_buffer.getvalue()
+        # -------------------convert to legal format------
+        # image_bytes = uploaded_file.read()
 
         # Encode the image bytes
         base64_image = encode_image(image_bytes)
