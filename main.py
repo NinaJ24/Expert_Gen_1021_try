@@ -53,10 +53,15 @@ def describe_image(image_bytes):  # Function to generate detailed descriptions o
     image_base64 = base64.b64encode(image_bytes).decode("utf-8")  # Convert image to base64
     response = client.chat.completions.create(
         model="gpt-4o",
+        # messages=[
+        #     {"role": "system", "content": "You are an AI that describes images in great detail."},
+        #     {"role": "user", "content": f"Describe this image in detail. Here is the image data: {image_base64}"},
+        # ],
         messages=[
-            {"role": "system", "content": "You are an AI that describes images in great detail."},
-            {"role": "user", "content": f"Describe this image in detail. Here is the image data: {image_base64}"},
-        ],
+            {"role": "system", "content": "You are an AI specialized in extracting text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible."},
+            {"role": "user", "content": f"Extract the questions, tables, and figures from this uploaded image: {image_base64}"},
+        ],  # Updated to focus on extracting structured content - 0310
+
         max_tokens=300
     )
     return response.choices[0].message.content  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
