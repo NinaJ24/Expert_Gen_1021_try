@@ -13,6 +13,7 @@ from PIL import Image #Added Image
 # from streamlit_paste_button import paste_image_button as pbutton
 from streamlit_paste_button import paste_image_button as pbutton
 import io
+import os
 
 # # paste_result = pbutton("📋 Paste an image")
 
