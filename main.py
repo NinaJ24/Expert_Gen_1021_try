@@ -264,22 +264,27 @@ prompt = st.chat_input("Ask your query about civil engineering")
 combined_prompt = process_input(uploaded_file=uploaded_file, prompt=prompt)
 
 if prompt := st.chat_input("Ask your query about civil engineering"):
-    process_input(uploaded_file, prompt)
-    combined_prompt = prompt  # Default to prompt
-    if uploaded_file:
-        image_description = describe_image(image_bytes)
-        combined_prompt = image_description.strip() + '
-' + prompt.strip()  # Append image description if available - 0310
-    print(f'User query received: {prompt}')  # Debug print - 0310
-    st.session_state.messages.append({"role": "user", "content": prompt})
+   
+    combined_prompt =  process_input(uploaded_file, prompt)
+    enhanced_prompt = f"{combined_prompt} Explain why and also provide me the source cited text"
+    st.session_state.messages.append({"role": "user", "content": enhanced_prompt})
+
+    # Display user message in chat message container
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.markdown(prompt if prompt else "[Uploaded Image]")  # Show text prompt or an image placeholder
+
+    # Display "I am thinking..." placeholder in assistant's response
     with st.chat_message("assistant"):
         thinking_placeholder = st.empty()
         thinking_placeholder.markdown("I am thinking...")
-    print('Generating response for user query...')  # Debug print - 0310
-    answer = get_response_content(prompt)
+
+    # Generate actual response using the assistant
+    answer = get_response_content(enhanced_prompt)  # Use the processed combined prompt
+
+    # Update the placeholder with the actual response
     thinking_placeholder.markdown(answer)
+
+    # Add assistant response to chat history
     print(f'Final response generated: {answer}')  # Debug print - 0310
     st.session_state.messages.append({"role": "assistant", "content": answer})
 
