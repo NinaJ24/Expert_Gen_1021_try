@@ -14,6 +14,7 @@ from PIL import Image #Added Image
 from streamlit_paste_button import paste_image_button as pbutton
 import io
 import os
+from openai import OpenAI
 
 # # paste_result = pbutton("📋 Paste an image")
 
@@ -30,7 +31,7 @@ OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']  # Added to authenticate OpenAI GP
 
 pc = Pinecone(api_key=PINECONE_API_KEY)
 assistant = pc.assistant.Assistant(assistant_name="example-assistant2")
-client = openai(
+client = OpenAI(
     api_key=OPENAI_API_KEY,  # This is the default and can be omitted
 )
 
