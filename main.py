@@ -195,7 +195,7 @@ def process_input(uploaded_file=None, prompt=""):
     # Step 2: Combine Extracted Image Text with User Prompt
     combined_prompt = f"{image_description}\n\nUser Query: {prompt}".strip() if image_description else prompt
 
-return combined_prompt  # Only return the combined prompt
+    return combined_prompt  # Only return the combined prompt
 
 # -----------alternative Upload----------------
 # if uploaded_file:
