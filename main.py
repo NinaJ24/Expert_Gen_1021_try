@@ -134,18 +134,7 @@ for message in st.session_state.messages:
 # -----------------------------Process input
 
 def process_input(uploaded_file=None, prompt=""): 
-        """
-    Processes both an uploaded image and a text input, combining them before sending to the AI assistant.
-
-    Args:
-        uploaded_file (File-like object, optional): Uploaded or pasted image.
-        prompt (str, optional): Text input from the user.
-
-    Returns:
-        None (displays responses directly in Streamlit UI)
-    """
     image_description = ""  # Variable to store extracted text from image
-
     # Step 1: Process Uploaded Image
     if uploaded_file:
         if isinstance(uploaded_file, io.BytesIO):
