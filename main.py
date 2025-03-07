@@ -29,6 +29,9 @@ OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']  # Added to authenticate OpenAI GP
 
 pc = Pinecone(api_key=PINECONE_API_KEY)
 assistant = pc.assistant.Assistant(assistant_name="example-assistant2")
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY"),  # This is the default and can be omitted
+)
 
 
 def describe_image(image_bytes):  # Function to generate detailed descriptions of images using GPT-4o - 0310
