@@ -7,13 +7,30 @@ from dotenv import load_dotenv
 from pinecone_plugins.assistant.models.chat import Message
 from pinecone import Pinecone
 
+import openai #added open AI
+from PIL import Image #Added Image
+
 
 load_dotenv()
 
 PINECONE_API_KEY = st.secrets['PINECONE_API_KEY']
+OPENAI_API_KEY = st.secrets['OPENAI_API_KEY']  # Added to authenticate OpenAI GPT-4o API - 0310
 
 pc = Pinecone(api_key=PINECONE_API_KEY)
 assistant = pc.assistant.Assistant(assistant_name="example-assistant2")
+
+
+def describe_image(image_bytes):  # Function to generate detailed descriptions of images using GPT-4o - 0310
+    response = openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "You are an AI that describes images in great detail."},
+            {"role": "user", "content": "Describe this image in detail."},
+        ],
+        max_tokens=300
+    )
+    return response["choices"][0]["message"]["content"]
+    
 
 def get_response_content(query):
     # Create a Message object using the input text
@@ -57,6 +74,19 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])  # Allow users to upload images for AI processing - 0310
+if uploaded_file:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+    
+    image_bytes = uploaded_file.getvalue()  # Convert uploaded image to bytes for GPT-4o processing - 0310
+    image_description = describe_image(image_bytes)
+    st.session_state.messages.append({"role": "user", "content": "[Uploaded Image]"})  # Store uploaded image reference in chat history - 0310
+    st.session_state.messages.append({"role": "assistant", "content": image_description})  # Store GPT-4o-generated image description in chat history - 0310
+    
+    with st.chat_message("assistant"):
+        st.markdown(image_description)
+        
 # # Accept user input
 # if prompt := st.chat_input("Ask your query about civil engineering"):
 #     # Add user message to chat history
