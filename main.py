@@ -84,13 +84,13 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])  # Allow users to upload images for AI processing - 0310
-uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
-# pasted_image = paste_image()  # Added support for direct clipboard pasting - 0310
-paste_result = pbutton("📋 Paste an image")  # Updated to use correct function for pasting images - 0310
 
-# if pasted_image is not None:
-#     uploaded_file = pasted_image  # Override uploaded_file if clipboard image is detected - 0310
+uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+
+# paste_result = pbutton("📋 Paste an image")  # Updated to use correct function for pasting images - 0310
+paste_result = spb.paste_image_button("📋 Paste an image", key="paste_button_unique_0310")  # Ensured unique key to prevent StreamlitDuplicateElementKey issue - 0310
+
+
 if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
     uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 
