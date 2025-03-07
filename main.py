@@ -49,34 +49,23 @@ client = OpenAI(
 #     )
 #     # return response["choices"][0]["message"]["content"]
 #     return response.choices[0].message.content  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
-# def describe_image(image_bytes):  # Function to generate detailed descriptions of images using GPT-4o - 0310
-#     image_base64 = base64.b64encode(image_bytes).decode("utf-8")  # Convert image to base64
-#     response = client.chat.completions.create(
-#         model="gpt-4o",
-#         # messages=[
-#         #     {"role": "system", "content": "You are an AI that describes images in great detail."},
-#         #     {"role": "user", "content": f"Describe this image in detail. Here is the image data: {image_base64}"},
-#         # ],
-#         messages=[
-#             {"role": "system", "content": "You are an AI specialized in extracting text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible."},
-#             {"role": "user", "content": f"Extract the questions, tables, and figures from this uploaded image: {image_base64}"},
-#         ],  # Updated to focus on extracting structured content - 0310
-
-#         max_tokens=300
-#     )
-#     return response.choices[0].message.content  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
-
-def describe_image(image_bytes):  # Function to extract questions, images, and tables from images - 0310
+def describe_image(image_bytes):  # Function to generate detailed descriptions of images using GPT-4o - 0310
+    image_base64 = base64.b64encode(image_bytes).decode("utf-8")  # Convert image to base64
     response = client.chat.completions.create(
         model="gpt-4o",
+        # messages=[
+        #     {"role": "system", "content": "You are an AI that describes images in great detail."},
+        #     {"role": "user", "content": f"Describe this image in detail. Here is the image data: {image_base64}"},
+        # ],
         messages=[
-            {"role": "system", "content": "You are an AI that extracts text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible."},
-            {"role": "user", "content": "Extract the text, questions, and tables from this image.", "image": image_bytes},  # Updated to use GPT-4o vision - 0310
-        ],
-        max_tokens=1000
+            {"role": "system", "content": "You are an AI specialized in extracting text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible."},
+            {"role": "user", "content": f"Extract the questions, tables, and figures from this uploaded image: {image_base64}"},
+        ],  # Updated to focus on extracting structured content - 0310
+
+        max_tokens=300
     )
     return response.choices[0].message.content  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
-    
+
 
 def get_response_content(query):
     # Create a Message object using the input text
