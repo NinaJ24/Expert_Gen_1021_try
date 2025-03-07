@@ -127,10 +127,7 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-        # ----------added state
-if "uploaded_file" not in st.session_state:
-    st.session_state.uploaded_file = None
-     # ----------added state
+
 
 def process_input(uploaded_file=None, prompt=""): 
     image_description = ""  # Variable to store extracted text from image
