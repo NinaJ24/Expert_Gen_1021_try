@@ -260,8 +260,8 @@ paste_result = pbutton("📋 Paste an image")
 
 if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
     uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
-prompt = st.chat_input("Ask your query about civil engineering")
-combined_prompt = process_input(uploaded_file=uploaded_file, prompt=prompt)
+# prompt = st.chat_input("Ask your query about civil engineering")
+# combined_prompt = process_input(uploaded_file=uploaded_file, prompt=prompt)
 
 if prompt := st.chat_input("Ask your query about civil engineering"):
    
