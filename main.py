@@ -161,9 +161,9 @@ def process_input(uploaded_file=None, prompt=""):
     # Step 2: Combine Extracted Image Text with User Prompt
     combined_prompt = f"{image_description}\n\nUser Query: {prompt}".strip() if image_description else prompt
     st.session_state.uploaded_file = None
-    st.session_state.pasted_image = None  # ✅ 确保粘贴的图片也被清除
+    # st.session_state.pasted_image = None  # ✅ 确保粘贴的图片也被清除
         # **确保 UI 重新加载，以清除 file_uploader**
-    st.rerun()  # ✅ 强制刷新 Streamlit UI，避免 file_uploader 仍然显示旧图片
+    # st.rerun()  # ✅ 强制刷新 Streamlit UI，避免 file_uploader 仍然显示旧图片 不可以 加了就不能回答了
     return combined_prompt  # Only return the combined prompt
 
 
