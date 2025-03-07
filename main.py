@@ -150,8 +150,11 @@ with st.container():
         uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"], accept_multiple_files=False)
     with col2:
         paste_result = st.button("📋 Paste an image")  # Streamlit button 代替 pbutton
-if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
-    uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+# Ensure uploaded file is used if available
+if paste_result is not None:
+    uploaded_file = paste_result  # Assign pasted image to uploaded_file
+# if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
+#     uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 
 
 
