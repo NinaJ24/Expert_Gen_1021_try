@@ -108,13 +108,14 @@ if uploaded_file:
         uploaded_file.save(image_bytes, format='PNG')  # Ensure correct format conversion for pasted images - 0310
     else:
         image_bytes = uploaded_file.getvalue()  # Handle uploaded file correctly - 0310
-    image_bytes = image_bytes.getvalue()  # Convert to byte format for transmission - 0310  # Ensure the image is properly converted to bytes - 0310
+    # No need to call getvalue() again as image_bytes is already bytes - 0310
     image_description = describe_image(image_bytes)
     st.session_state.messages.append({"role": "user", "content": "[Uploaded Image]"})  # Store uploaded image reference in chat history - 0310
     st.session_state.messages.append({"role": "assistant", "content": image_description})  # Store GPT-4o-generated image description in chat history - 0310
     
     with st.chat_message("assistant"):
         st.markdown(image_description)
+
 # if uploaded_file:
 #     image = Image.open(uploaded_file)
 #     st.image(image, caption="Uploaded Image", use_column_width=True)
