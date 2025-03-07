@@ -30,11 +30,20 @@ client = OpenAI(
 )
 
 # --added
-# 初始化 session_state 变量
+# # 初始化 session_state 变量
+# if "messages" not in st.session_state:
+#     st.session_state.messages = []
+# if "uploaded_file" not in st.session_state:
+#     st.session_state.uploaded_file = None
+
+# 初始化 session_state 变量，避免 AttributeError
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "uploaded_file" not in st.session_state:
     st.session_state.uploaded_file = None
+if "pasted_image" not in st.session_state:  # ✅ 确保 pasted_image 变量被初始化
+    st.session_state.pasted_image = None
+
 
 
 
