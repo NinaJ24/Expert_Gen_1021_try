@@ -88,7 +88,7 @@ def describe_image(uploaded_file):
         ],
     )
 
-        st.session_state.uploaded_file = None # added to clear
+        # st.session_state.uploaded_file = None # added to clear
         return response.choices[0].message.content  # Return AI-generated response
 
     except Exception as e:
@@ -171,7 +171,11 @@ def process_input(uploaded_file=None, prompt=""):
 
     # Step 2: Combine Extracted Image Text with User Prompt
     combined_prompt = f"{image_description}\n\nUser Query: {prompt}".strip() if image_description else prompt
+       # **关键：清除 uploaded_file 并确保 file_uploader 组件更新**
     st.session_state.uploaded_file = None
+    st.session_state.pasted_image = None  # ✅ 也清除粘贴的图片
+    st.rerun()  # ✅ 重新运行 Streamlit，刷新界面
+    
     return combined_prompt  # Only return the combined prompt
 
 
@@ -190,10 +194,13 @@ if uploaded_file:
 paste_result = pbutton("📋 Paste an image")
 if paste_result.image_data is not None:
     st.session_state.uploaded_file = paste_result.image_data
+    st.session_state.pasted_image = paste_result.image_data  # ✅ 追踪粘贴的图片
 
 # **确保上传文件被正确存储**
 if st.session_state.uploaded_file:
     uploaded_file = st.session_state.uploaded_file
+elif st.session_state.pasted_image:
+    uploaded_file = st.session_state.pasted_image  # ✅ 处理粘贴的情况
 # added/=========
 
 
