@@ -74,7 +74,9 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])  # Allow users to upload images for AI processing - 0310
+# uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])  # Allow users to upload images for AI processing - 0310
+uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+
 if uploaded_file:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded Image", use_column_width=True)
