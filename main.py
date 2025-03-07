@@ -45,7 +45,9 @@ def describe_image(image_bytes):  # Function to generate detailed descriptions o
         ],
         max_tokens=300
     )
-    return response["choices"][0]["message"]["content"]
+    # return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
+
     
 
 def get_response_content(query):
