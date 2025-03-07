@@ -59,7 +59,10 @@ def describe_image(uploaded_file):
             return "No image uploaded or pasted."
 
         # Send image to GPT-4o Vision model
-        base64_image = encode_image(image_bytes)  
+        # base64_image = encode_image(image_bytes)  
+        
+        base64_image = encode_image(uploaded_file)  
+        
         response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -130,29 +133,8 @@ for message in st.session_state.messages:
 
 # -----------------------------Process input
 
-# def process_input(uploaded_file, prompt):
-#         # print('File uploaded successfully')  # Debug print - 0310
-#     image_description = []
-    
-#         if isinstance(uploaded_file, io.BytesIO):
-#             image = Image.open(uploaded_file)
-#         else:
-#             image = uploaded_file
-#         st.image(image, caption="Uploaded Image", use_container_width=True)
-        
-#         image_bytes = io.BytesIO()
-#         if isinstance(uploaded_file, Image.Image):
-#             uploaded_file.save(image_bytes, format='PNG')
-#         else:
-#             image_bytes.write(uploaded_file.getvalue())
-#         image_bytes = image_bytes.getvalue()
-        
-#         image_description = describe_image(image_bytes)
-
-# combined_prompt = image_description + prompt
-
-def process_input(uploaded_file=None, prompt=""):
-    """
+def process_input(uploaded_file=None, prompt=""): 
+        """
     Processes both an uploaded image and a text input, combining them before sending to the AI assistant.
 
     Args:
@@ -174,16 +156,18 @@ def process_input(uploaded_file=None, prompt=""):
         # Display the uploaded image
         st.image(image, caption="Uploaded Image", use_container_width=True)
 
-        # Convert image to bytes for processing
-        image_bytes = io.BytesIO()
-        if isinstance(image, Image.Image):  
-            image.save(image_bytes, format="PNG")
-        else:
-            image_bytes.write(uploaded_file.getvalue())
-        image_bytes = image_bytes.getvalue()
+        # # Convert image to bytes for processing
+        # image_bytes = io.BytesIO()
+        # if isinstance(image, Image.Image):  
+        #     image.save(image_bytes, format="PNG")
+        # else:
+        #     image_bytes.write(uploaded_file.getvalue())
+        # image_bytes = image_bytes.getvalue()
 
         # Extract text, tables, and figures from the image using GPT-4o
-        image_description = describe_image(image_bytes)
+        # image_description = describe_image(image_bytes)
+        
+        image_description = describe_image(uploaded_file)
 
         # Store extracted content in chat history
         st.session_state.messages.append({"role": "assistant", "content": f"**Extracted Content from Image:**\n{image_description}"})
@@ -196,6 +180,44 @@ def process_input(uploaded_file=None, prompt=""):
     combined_prompt = f"{image_description}\n\nUser Query: {prompt}".strip() if image_description else prompt
 
     return combined_prompt  # Only return the combined prompt
+
+
+
+
+uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+
+paste_result = pbutton("📋 Paste an image")
+
+
+if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
+    uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+# prompt = st.chat_input("Ask your query about civil engineering")
+# combined_prompt = process_input(uploaded_file=uploaded_file, prompt=prompt)
+
+if prompt := st.chat_input("Ask your query about civil engineering"):
+   
+    combined_prompt =  process_input(uploaded_file, prompt)
+    enhanced_prompt = f"{combined_prompt} Explain why and also provide me the source cited text"
+    st.session_state.messages.append({"role": "user", "content": enhanced_prompt})
+
+    # Display user message in chat message container
+    with st.chat_message("user"):
+        st.markdown(prompt if prompt else "[Uploaded Image]")  # Show text prompt or an image placeholder
+
+    # Display "I am thinking..." placeholder in assistant's response
+    with st.chat_message("assistant"):
+        thinking_placeholder = st.empty()
+        thinking_placeholder.markdown("I am thinking...")
+
+    # Generate actual response using the assistant
+    answer = get_response_content(enhanced_prompt)  # Use the processed combined prompt
+
+    # Update the placeholder with the actual response
+    thinking_placeholder.markdown(answer)
+
+    # Add assistant response to chat history
+    print(f'Final response generated: {answer}')  # Debug print - 0310
+    st.session_state.messages.append({"role": "assistant", "content": answer})
 
 # -----------alternative Upload----------------
 # if uploaded_file:
@@ -244,67 +266,6 @@ def process_input(uploaded_file=None, prompt=""):
 #     # Generate actual response
 #     # answer = get_response_content(prompt)
 #     answer = get_response_content(enhanced_prompt)
-
-#     # Update the placeholder with the actual response
-#     thinking_placeholder.markdown(answer)
-
-#     # Add assistant response to chat history
-#     print(f'Final response generated: {answer}')  # Debug print - 0310
-#     st.session_state.messages.append({"role": "assistant", "content": answer})
-
-
-uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
-
-paste_result = pbutton("📋 Paste an image")
-
-
-if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
-    uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
-# prompt = st.chat_input("Ask your query about civil engineering")
-# combined_prompt = process_input(uploaded_file=uploaded_file, prompt=prompt)
-
-if prompt := st.chat_input("Ask your query about civil engineering"):
-   
-    combined_prompt =  process_input(uploaded_file, prompt)
-    enhanced_prompt = f"{combined_prompt} Explain why and also provide me the source cited text"
-    st.session_state.messages.append({"role": "user", "content": enhanced_prompt})
-
-    # Display user message in chat message container
-    with st.chat_message("user"):
-        st.markdown(prompt if prompt else "[Uploaded Image]")  # Show text prompt or an image placeholder
-
-    # Display "I am thinking..." placeholder in assistant's response
-    with st.chat_message("assistant"):
-        thinking_placeholder = st.empty()
-        thinking_placeholder.markdown("I am thinking...")
-
-    # Generate actual response using the assistant
-    answer = get_response_content(enhanced_prompt)  # Use the processed combined prompt
-
-    # Update the placeholder with the actual response
-    thinking_placeholder.markdown(answer)
-
-    # Add assistant response to chat history
-    print(f'Final response generated: {answer}')  # Debug print - 0310
-    st.session_state.messages.append({"role": "assistant", "content": answer})
-
-
-# if combined_prompt.strip():  # Ensure we only proceed if there is valid input
-#     # Add user message to chat history
-#     enhanced_prompt = f"{combined_prompt} Explain why and also provide me the source cited text"
-#     st.session_state.messages.append({"role": "user", "content": enhanced_prompt})
-
-#     # Display user message in chat message container
-#     with st.chat_message("user"):
-#         st.markdown(prompt if prompt else "[Uploaded Image]")  # Show text prompt or an image placeholder
-
-#     # Display "I am thinking..." placeholder in assistant's response
-#     with st.chat_message("assistant"):
-#         thinking_placeholder = st.empty()
-#         thinking_placeholder.markdown("I am thinking...")
-
-#     # Generate actual response using the assistant
-#     answer = get_response_content(enhanced_prompt)  # Use the processed combined prompt
 
 #     # Update the placeholder with the actual response
 #     thinking_placeholder.markdown(answer)
