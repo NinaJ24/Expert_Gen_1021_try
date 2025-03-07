@@ -15,6 +15,8 @@ from streamlit_paste_button import paste_image_button as pbutton
 import io
 import os
 from openai import OpenAI
+import base64  # Added to handle image conversion for GPT-4o - 0310
+
 
 # # paste_result = pbutton("📋 Paste an image")
 
@@ -124,6 +126,7 @@ if uploaded_file:
 
     
     image_bytes = io.BytesIO()  # Convert image to bytes for processing - 0310
+    
     if isinstance(uploaded_file, Image.Image):
         uploaded_file.save(image_bytes, format='PNG')  # Ensure correct format conversion for pasted images - 0310
     else:
