@@ -14,3 +14,4 @@ unstructured
 langchain-text-splitters
 pinecone-client
 pinecone-plugin-assistant
+streamlit-paste-button
