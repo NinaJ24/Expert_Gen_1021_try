@@ -87,6 +87,18 @@ client = OpenAI(
 #     # print(f'Extracted text from image: {result}')  # Debug print - 0310
 #     return result  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
 
+def encode_image(image_bytes):
+    """
+    Converts an image in bytes to a Base64 string.
+
+    Args:
+        image_bytes (bytes): The image data in bytes.
+
+    Returns:
+        str: Base64 encoded string of the image.
+    """
+    return base64.b64encode(image_bytes).decode("utf-8")
+
 
 def describe_image(uploaded_file):
     """
@@ -103,22 +115,19 @@ def describe_image(uploaded_file):
             return "No image uploaded or pasted."
 
         # Check if input is a file-like object (uploaded image)
-        if isinstance(uploaded_file, bytes):
-            image_bytes = uploaded_file  # Directly use bytes if already in binary format
-        else:
-            # # Convert image to binary (for Streamlit's uploaded file)
-            # image = Image.open(uploaded_file)
-            # image_buffer = io.BytesIO()
-            # image.save(image_buffer, format=image.format)  # Preserve original format
-            # image_bytes = image_buffer.getvalue()  # Get binary content
-                    # Convert image to binary and then Base64
-            image = Image.open(uploaded_file)
-            image_buffer = io.BytesIO()
-            image.save(image_buffer, format="JPEG")  # Convert to JPEG format
-            image_bytes = image_buffer.getvalue()
-            base64_image = base64.b64encode(image_bytes).decode("utf-8")  # Convert to Base64 string
+        # if isinstance(uploaded_file, bytes):
+        #     image_bytes = uploaded_file  # Directly use bytes if already in binary format
+        # else:
+
+        #             # Convert image to binary and then Base64
+        #     image = Image.open(uploaded_file)
+        #     image_buffer = io.BytesIO()
+        #     image.save(image_buffer, format="JPEG")  # Convert to JPEG format
+        #     image_bytes = image_buffer.getvalue()
+        #     base64_image = base64.b64encode(image_bytes).decode("utf-8")  # Convert to Base64 string
 
         # Send image to GPT-4o Vision model
+        base64_image = encode_image(image_bytes)  
         response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -188,8 +197,6 @@ for message in st.session_state.messages:
 
 uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 
-# paste_result = pbutton("📋 Paste an image")  # Updated to use correct function for pasting images - 0310
-# paste_result = spb.paste_image_button("📋 Paste an image")  # Ensured unique key to prevent StreamlitDuplicateElementKey issue - 0310
 paste_result = pbutton("📋 Paste an image")
 
 
@@ -205,48 +212,30 @@ if uploaded_file:
     st.image(image, caption="Uploaded Image", use_container_width=True)  # Updated per Streamlit API recommendation - 0310
 
     
-    image_bytes = io.BytesIO()  # Convert image to bytes for processing - 0310
-    
-    if isinstance(uploaded_file, Image.Image):
-        uploaded_file.save(image_bytes, format='PNG')  # Ensure correct format conversion for pasted images - 0310
+    # image_bytes = io.BytesIO()  # Convert image to bytes for processing - 0310
+    # Convert image to bytes for processing
+    image_buffer = io.BytesIO()
+    if isinstance(image, Image.Image):  # Ensure correct image format conversion
+        image.save(image_buffer, format="PNG")  
+        image_bytes = image_buffer.getvalue()  # Get bytes from saved image
     else:
-        image_bytes = uploaded_file.getvalue()  # Handle uploaded file correctly - 0310
-    # No need to call getvalue() again as image_bytes is already bytes - 0310
+        image_bytes = uploaded_file.getvalue()  # Directly read bytes if uploaded as file
+
+    
+    # if isinstance(uploaded_file, Image.Image):
+    #     uploaded_file.save(image_bytes, format='PNG')  # Ensure correct format conversion for pasted images - 0310
+    # else:
+    #     image_bytes = uploaded_file.getvalue()  # Handle uploaded file correctly - 0310
+    # # No need to call getvalue() again as image_bytes is already bytes - 0310
     image_description = describe_image(image_bytes)
-    print(f'Image description extracted: {image_description}')  # Debug print - 0310
+    # print(f'Image description extracted: {image_description}')  # Debug print - 0310
     st.session_state.messages.append({"role": "user", "content": "[Uploaded Image]"})  # Store uploaded image reference in chat history - 0310
     st.session_state.messages.append({"role": "assistant", "content": image_description})  # Store GPT-4o-generated image description in chat history - 0310
     
     with st.chat_message("assistant"):
         st.markdown(image_description)
 
-# if uploaded_file:
-#     image = Image.open(uploaded_file)
-#     st.image(image, caption="Uploaded Image", use_column_width=True)
-    
-#     image_bytes = uploaded_file.getvalue()  # Convert uploaded image to bytes for GPT-4o processing - 0310
-#     image_description = describe_image(image_bytes)
-#     st.session_state.messages.append({"role": "user", "content": "[Uploaded Image]"})  # Store uploaded image reference in chat history - 0310
-#     st.session_state.messages.append({"role": "assistant", "content": image_description})  # Store GPT-4o-generated image description in chat history - 0310
-    
-#     with st.chat_message("assistant"):
-#         st.markdown(image_description)
-        
-# # Accept user input
-# if prompt := st.chat_input("Ask your query about civil engineering"):
-#     # Add user message to chat history
-#     st.session_state.messages.append({"role": "user", "content": prompt})
-#     # Display user message in chat message container
-#     with st.chat_message("user"):
-#         st.markdown(prompt)
-#     answer = get_response_content(prompt)
-#     # Display assistant response in chat message container
-#     with st.chat_message("assistant"):
-#         # response = st.write_stream(response_generator())
-#         st.markdown(answer)
-#     # Add assistant response to chat history
-#     # st.session_state.messages.append({"role": "assistant", "content": response})
-#     st.session_state.messages.append({"role": "assistant", "content": answer})
+
 
 if prompt := st.chat_input("Ask your query about civil engineering"):
     # Add user message to chat history
