@@ -29,22 +29,6 @@ client = OpenAI(
     api_key=OPENAI_API_KEY,  # This is the default and can be omitted
 )
 
-# --added
-# # 初始化 session_state 变量
-# if "messages" not in st.session_state:
-#     st.session_state.messages = []
-# if "uploaded_file" not in st.session_state:
-#     st.session_state.uploaded_file = None
-
-# 初始化 session_state 变量，避免 AttributeError
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "uploaded_file" not in st.session_state:
-    st.session_state.uploaded_file = None
-if "pasted_image" not in st.session_state:  # ✅ 确保 pasted_image 变量被初始化
-    st.session_state.pasted_image = None
-
-
 
 
 def encode_image(image_bytes):
@@ -97,7 +81,6 @@ def describe_image(uploaded_file):
         ],
     )
 
-        # st.session_state.uploaded_file = None # added to clear
         return response.choices[0].message.content  # Return AI-generated response
 
     except Exception as e:
@@ -114,9 +97,9 @@ def get_response_content(query):
     answer = resp.get("message", {}).get("content", "")
 
     # Output and return the content part
-    # print(answer)
+    print(answer)
     # display(Markdown(content_text))
-    # print(f'get_response_content: {answer}')  # Debug print - 0310
+    print(f'get_response_content: {answer}')  # Debug print - 0310
     return answer
 
 
@@ -180,37 +163,15 @@ def process_input(uploaded_file=None, prompt=""):
 
     # Step 2: Combine Extracted Image Text with User Prompt
     combined_prompt = f"{image_description}\n\nUser Query: {prompt}".strip() if image_description else prompt
-       # **关键：清除 uploaded_file 并确保 file_uploader 组件更新**
     st.session_state.uploaded_file = None
-    st.session_state.pasted_image = None  # ✅ 也清除粘贴的图片
-    st.rerun()  # ✅ 重新运行 Streamlit，刷新界面
-    
     return combined_prompt  # Only return the combined prompt
 
 
 
 
-# uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 
-# paste_result = pbutton("📋 Paste an image")
-# added/=========
-# **文件上传区域**
-uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"])
-if uploaded_file:
-    st.session_state.uploaded_file = uploaded_file
-
-# **粘贴按钮**
 paste_result = pbutton("📋 Paste an image")
-if paste_result.image_data is not None:
-    st.session_state.uploaded_file = paste_result.image_data
-    st.session_state.pasted_image = paste_result.image_data  # ✅ 追踪粘贴的图片
-
-# **确保上传文件被正确存储**
-if st.session_state.uploaded_file:
-    uploaded_file = st.session_state.uploaded_file
-elif st.session_state.pasted_image:
-    uploaded_file = st.session_state.pasted_image  # ✅ 处理粘贴的情况
-# added/=========
 
 
 if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
@@ -242,9 +203,3 @@ if prompt := st.chat_input("Ask your query about civil engineering"):
     # Add assistant response to chat history
     print(f'Final response generated: {answer}')  # Debug print - 0310
     st.session_state.messages.append({"role": "assistant", "content": answer})
-        # 存储回答
-    # st.session_state.messages.append({"role": "assistant", "content": answer})
-
-    # **关键：自动清除图片并刷新页面**
-    st.session_state.uploaded_file = None
-    st.rerun()
