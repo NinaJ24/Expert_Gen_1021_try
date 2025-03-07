@@ -229,6 +229,10 @@ if prompt := st.chat_input("Ask your query about civil engineering"):
         # 存储回答
     # st.session_state.messages.append({"role": "assistant", "content": answer})
 
-    # **关键：自动清除图片并刷新页面**
-    st.session_state.uploaded_file = None
-    st.rerun()
+    # # **关键：自动清除图片并刷新页面**
+    # st.session_state.uploaded_file = None
+    # st.rerun()
+    # **关键：清除上传的图片，并刷新页面**
+    st.session_state.uploaded_file = None  # ✅ 清除上传的图片
+    st.session_state.pasted_image = None  # ✅ 清除粘贴的图片
+    st.rerun()  # ✅ 让 UI 重新加载，确保 `file_uploader` 变为空
