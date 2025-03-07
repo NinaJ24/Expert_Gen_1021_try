@@ -60,8 +60,11 @@ def describe_image(uploaded_file):
 
         # Send image to GPT-4o Vision model
         # base64_image = encode_image(image_bytes)  
-        
-        base64_image = encode_image(uploaded_file)  
+        image_bytes = uploaded_file.read()
+
+        # Encode the image bytes
+        base64_image = encode_image(image_bytes)
+        # base64_image = encode_image(uploaded_file)  
         
         response = client.chat.completions.create(
         model="gpt-4o-mini",
