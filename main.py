@@ -32,7 +32,7 @@ assistant = pc.assistant.Assistant(assistant_name="example-assistant2")
 
 
 def describe_image(image_bytes):  # Function to generate detailed descriptions of images using GPT-4o - 0310
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are an AI that describes images in great detail."},
