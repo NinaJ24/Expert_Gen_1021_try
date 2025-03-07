@@ -29,6 +29,13 @@ client = OpenAI(
     api_key=OPENAI_API_KEY,  # This is the default and can be omitted
 )
 
+# --added
+# 初始化 session_state 变量
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "uploaded_file" not in st.session_state:
+    st.session_state.uploaded_file = None
+
 
 
 def encode_image(image_bytes):
@@ -169,9 +176,24 @@ def process_input(uploaded_file=None, prompt=""):
 
 
 
-uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+# uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"], accept_multiple_files=False)  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 
+# paste_result = pbutton("📋 Paste an image")
+# added/=========
+# **文件上传区域**
+uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type=["png", "jpg", "jpeg"])
+if uploaded_file:
+    st.session_state.uploaded_file = uploaded_file
+
+# **粘贴按钮**
 paste_result = pbutton("📋 Paste an image")
+if paste_result.image_data is not None:
+    st.session_state.uploaded_file = paste_result.image_data
+
+# **确保上传文件被正确存储**
+if st.session_state.uploaded_file:
+    uploaded_file = st.session_state.uploaded_file
+# added/=========
 
 
 if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
@@ -203,3 +225,9 @@ if prompt := st.chat_input("Ask your query about civil engineering"):
     # Add assistant response to chat history
     print(f'Final response generated: {answer}')  # Debug print - 0310
     st.session_state.messages.append({"role": "assistant", "content": answer})
+        # 存储回答
+    # st.session_state.messages.append({"role": "assistant", "content": answer})
+
+    # **关键：自动清除图片并刷新页面**
+    st.session_state.uploaded_file = None
+    st.rerun()
