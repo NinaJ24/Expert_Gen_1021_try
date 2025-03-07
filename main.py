@@ -60,45 +60,88 @@ client = OpenAI(
 #     print(f'Extracted text from image: {result}')  # Debug print - 0310
 #     return response.choices[0].message.content  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
 
-def describe_image(image_path):  # Updated to use file path instead of raw bytes - 0310
-    print(f'Function describe_image called with image bytes: {len(image_bytes)} bytes')  # Debug print - 0310  # Function to extract questions, images, and tables from images - 0310
-    with open(image_path, "rb") as image_file:
-        image_base64 = base64.b64encode(image_file.read()).decode("utf-8")  # Encode image from path - 0310  # Convert image to base64 - 0310
-    # print('GPT-4o API called for image processing')  # Debug print - 0310
-    # response = client.chat.completions.create(
-    #     # print('GPT-4o API called for image processing')  # Debug print - 0310
-    #     model="gpt-4o",
-    #     messages=[
-    #         {
-    #             "role": "user", "content": [
-    #             {
-    #                 "type": "text", "text": "You are an AI specialized in extracting text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible."},
-    #             {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}},
-    #         ]},
-    #     ]  # Updated to follow structured OpenAI vision format - 0310,  # Updated to ensure only structured content is extracted without additional descriptions - 0310  # Updated to focus on extracting structured content - 0310  # Updated to pass image data to GPT-4o - 0310
-    #     max_tokens=300
-    # )
-    response = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {
-            "role": "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": "You are an AI specialized in extracting text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible.",
-                },
-                {
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
-                },
-            ],
-        }
-    ],
-)
-    result = response.choices[0].message.content  # Ensure result is defined before printing - 0310
-    # print(f'Extracted text from image: {result}')  # Debug print - 0310
-    return result  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
+# def describe_image(image_path):  # Updated to use file path instead of raw bytes - 0310
+#     print(f'Function describe_image called with image bytes: {len(image_bytes)} bytes')  # Debug print - 0310  # Function to extract questions, images, and tables from images - 0310
+#     with open(image_path, "rb") as image_file:
+#         image_base64 = base64.b64encode(image_file.read()).decode("utf-8")  # Encode image from path - 0310  # Convert image to base64 - 0310
+    
+#     response = client.chat.completions.create(
+#     model="gpt-4o-mini",
+#     messages=[
+#         {
+#             "role": "user",
+#             "content": [
+#                 {
+#                     "type": "text",
+#                     "text": "You are an AI specialized in extracting text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible.",
+#                 },
+#                 {
+#                     "type": "image_url",
+#                     "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+#                 },
+#             ],
+#         }
+#     ],
+# )
+#     result = response.choices[0].message.content  # Ensure result is defined before printing - 0310
+#     # print(f'Extracted text from image: {result}')  # Debug print - 0310
+#     return result  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
+
+
+def describe_image(uploaded_file):
+    """
+    Processes an uploaded or pasted image and sends it to OpenAI's GPT-4o Vision model.
+
+    Args:
+        uploaded_file: Streamlit uploaded file object or pasted image data.
+
+    Returns:
+        str: AI-generated description of the image.
+    """
+    try:
+        if uploaded_file is None:
+            return "No image uploaded or pasted."
+
+        # Check if input is a file-like object (uploaded image)
+        if isinstance(uploaded_file, bytes):
+            image_bytes = uploaded_file  # Directly use bytes if already in binary format
+        else:
+            # # Convert image to binary (for Streamlit's uploaded file)
+            # image = Image.open(uploaded_file)
+            # image_buffer = io.BytesIO()
+            # image.save(image_buffer, format=image.format)  # Preserve original format
+            # image_bytes = image_buffer.getvalue()  # Get binary content
+                    # Convert image to binary and then Base64
+            image = Image.open(uploaded_file)
+            image_buffer = io.BytesIO()
+            image.save(image_buffer, format="JPEG")  # Convert to JPEG format
+            image_bytes = image_buffer.getvalue()
+            base64_image = base64.b64encode(image_bytes).decode("utf-8")  # Convert to Base64 string
+
+        # Send image to GPT-4o Vision model
+        response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "You are an AI specialized in extracting text, questions, tables, and figures from uploaded images. Extract only the questions, tables, and diagrams without adding explanations or unnecessary details. Maintain the original structure of the content as much as possible.",
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                    },
+                ],
+            }
+        ],
+    )
+
+        return response.choices[0].message.content  # Return AI-generated response
+
+    except Exception as e:
+        return f"Error processing the image: {str(e)}"
 
 def get_response_content(query):
     # Create a Message object using the input text
