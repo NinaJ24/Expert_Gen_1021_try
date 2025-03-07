@@ -149,17 +149,6 @@ def process_input(uploaded_file=None, prompt=""):
         # Display the uploaded image
         st.image(image, caption="Uploaded Image", use_container_width=True)
 
-        # # Convert image to bytes for processing
-        # image_bytes = io.BytesIO()
-        # if isinstance(image, Image.Image):  
-        #     image.save(image_bytes, format="PNG")
-        # else:
-        #     image_bytes.write(uploaded_file.getvalue())
-        # image_bytes = image_bytes.getvalue()
-
-        # Extract text, tables, and figures from the image using GPT-4o
-        # image_description = describe_image(image_bytes)
-        
         image_description = describe_image(uploaded_file)
 
         # Store extracted content in chat history
@@ -172,6 +161,9 @@ def process_input(uploaded_file=None, prompt=""):
     # Step 2: Combine Extracted Image Text with User Prompt
     combined_prompt = f"{image_description}\n\nUser Query: {prompt}".strip() if image_description else prompt
     st.session_state.uploaded_file = None
+    st.session_state.pasted_image = None  # ✅ 确保粘贴的图片也被清除
+        # **确保 UI 重新加载，以清除 file_uploader**
+    st.rerun()  # ✅ 强制刷新 Streamlit UI，避免 file_uploader 仍然显示旧图片
     return combined_prompt  # Only return the combined prompt
 
 
