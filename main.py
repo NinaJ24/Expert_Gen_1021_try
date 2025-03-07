@@ -36,16 +36,27 @@ client = OpenAI(
 )
 
 
+# def describe_image(image_bytes):  # Function to generate detailed descriptions of images using GPT-4o - 0310
+#     response = client.chat.completions.create(
+#         model="gpt-4o",
+#         messages=[
+#             {"role": "system", "content": "You are an AI that describes images in great detail."},
+#             {"role": "user", "content": "Describe this image in detail."},
+#         ],
+#         max_tokens=300
+#     )
+#     # return response["choices"][0]["message"]["content"]
+#     return response.choices[0].message.content  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
 def describe_image(image_bytes):  # Function to generate detailed descriptions of images using GPT-4o - 0310
+    image_base64 = base64.b64encode(image_bytes).decode("utf-8")  # Convert image to base64
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are an AI that describes images in great detail."},
-            {"role": "user", "content": "Describe this image in detail."},
+            {"role": "user", "content": f"Describe this image in detail. Here is the image data: {image_base64}"},
         ],
         max_tokens=300
     )
-    # return response["choices"][0]["message"]["content"]
     return response.choices[0].message.content  # Fixed TypeError: ChatCompletion object is not subscriptable - 0310
 
     
