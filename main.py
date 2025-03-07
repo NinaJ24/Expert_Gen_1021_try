@@ -32,28 +32,12 @@ client = OpenAI(
 
 
 def encode_image(image_bytes):
-    """
-    Converts an image in bytes to a Base64 string.
 
-    Args:
-        image_bytes (bytes): The image data in bytes.
-
-    Returns:
-        str: Base64 encoded string of the image.
-    """
     return base64.b64encode(image_bytes).decode("utf-8")
 
 
 def describe_image(uploaded_file):
-    """
-    Processes an uploaded or pasted image and sends it to OpenAI's GPT-4o Vision model.
 
-    Args:
-        uploaded_file: Streamlit uploaded file object or pasted image data.
-
-    Returns:
-        str: AI-generated description of the image.
-    """
     try:
         if uploaded_file is None:
             return "No image uploaded or pasted."
@@ -145,9 +129,6 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 
-
-# -----------------------------Process input
-
 def process_input(uploaded_file=None, prompt=""): 
     image_description = ""  # Variable to store extracted text from image
     # Step 1: Process Uploaded Image
@@ -182,7 +163,7 @@ def process_input(uploaded_file=None, prompt=""):
 
     # Step 2: Combine Extracted Image Text with User Prompt
     combined_prompt = f"{image_description}\n\nUser Query: {prompt}".strip() if image_description else prompt
-
+    st.session_state.uploaded_file = None
     return combined_prompt  # Only return the combined prompt
 
 
@@ -222,58 +203,3 @@ if prompt := st.chat_input("Ask your query about civil engineering"):
     # Add assistant response to chat history
     print(f'Final response generated: {answer}')  # Debug print - 0310
     st.session_state.messages.append({"role": "assistant", "content": answer})
-
-# -----------alternative Upload----------------
-# if uploaded_file:
-#     if isinstance(uploaded_file, io.BytesIO):
-#         image = Image.open(uploaded_file)  # Ensure compatibility with both uploaded and pasted images - 0310
-#     else:
-#         image = uploaded_file  # Directly use pasted images which are already PIL objects - 0310
-#     # st.image(image, caption="Uploaded Image", use_column_width=True)
-#     st.image(image, caption="Uploaded Image", use_container_width=True)  # Updated per Streamlit API recommendation - 0310
-
-    
-#     # image_bytes = io.BytesIO()  # Convert image to bytes for processing - 0310
-#     # Convert image to bytes for processing
-#     image_buffer = io.BytesIO()
-#     if isinstance(image, Image.Image):  # Ensure correct image format conversion
-#         image.save(image_buffer, format="PNG")  
-#         image_bytes = image_buffer.getvalue()  # Get bytes from saved image
-#     else:
-#         image_bytes = uploaded_file.getvalue()  # Directly read bytes if uploaded as file
-#     image_description = describe_image(image_bytes)
-#     # print(f'Image description extracted: {image_description}')  # Debug print - 0310
-#     st.session_state.messages.append({"role": "user", "content": "[Uploaded Image]"})  # Store uploaded image reference in chat history - 0310
-#     st.session_state.messages.append({"role": "assistant", "content": image_description})  # Store GPT-4o-generated image description in chat history - 0310
-#     answer = get_response_content(image_description)
-#     with st.chat_message("assistant"):
-#         st.markdown(answer)
-
-# --------alternative upload only-------
-# -----------previous final output-----------
-
-# if prompt := st.chat_input("Ask your query about civil engineering"):
-#     # Add user message to chat history
-#     enhanced_prompt = f"{prompt} Explain why and also provide me the source cited text"
-#     # st.session_state.messages.append({"role": "user", "content": prompt})
-#     st.session_state.messages.append({"role": "user", "content": enhanced_prompt})
-
-#     # Display user message in chat message container
-#     with st.chat_message("user"):
-#         st.markdown(prompt)
-
-#     # Display "I am thinking..." placeholder in assistant's response
-#     with st.chat_message("assistant"):
-#         thinking_placeholder = st.empty()
-#         thinking_placeholder.markdown("I am thinking...")
-
-#     # Generate actual response
-#     # answer = get_response_content(prompt)
-#     answer = get_response_content(enhanced_prompt)
-
-#     # Update the placeholder with the actual response
-#     thinking_placeholder.markdown(answer)
-
-#     # Add assistant response to chat history
-#     print(f'Final response generated: {answer}')  # Debug print - 0310
-#     st.session_state.messages.append({"role": "assistant", "content": answer})
