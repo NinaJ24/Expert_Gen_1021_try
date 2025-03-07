@@ -12,6 +12,7 @@ from PIL import Image #Added Image
 # from streamlit_paste_button import paste_image  # Added to enable clipboard image pasting - 0310
 # from streamlit_paste_button import paste_image_button as pbutton
 from streamlit_paste_button import paste_image_button as pbutton
+import io
 
 # # paste_result = pbutton("📋 Paste an image")
 
