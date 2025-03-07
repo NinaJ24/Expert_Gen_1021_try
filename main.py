@@ -96,7 +96,10 @@ if paste_result.image_data is not None:  # Corrected variable name for pasted im
     uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
 
 if uploaded_file:
-    image = Image.open(uploaded_file)
+    if isinstance(uploaded_file, io.BytesIO):
+        image = Image.open(uploaded_file)  # Ensure compatibility with both uploaded and pasted images - 0310
+    else:
+        image = uploaded_file  # Directly use pasted images which are already PIL objects - 0310
     st.image(image, caption="Uploaded Image", use_column_width=True)
     
     image_bytes = io.BytesIO()  # Convert image to bytes for processing - 0310
@@ -107,7 +110,7 @@ if uploaded_file:
     st.session_state.messages.append({"role": "assistant", "content": image_description})  # Store GPT-4o-generated image description in chat history - 0310
     
     with st.chat_message("assistant"):
-        st.markdown(image_description)    
+        st.markdown(image_description) 
 # if uploaded_file:
 #     image = Image.open(uploaded_file)
 #     st.image(image, caption="Uploaded Image", use_column_width=True)
