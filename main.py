@@ -10,7 +10,14 @@ from pinecone import Pinecone
 import openai #added open AI
 from PIL import Image #Added Image
 from streamlit_paste_button import paste_image  # Added to enable clipboard image pasting - 0310
+# from streamlit_paste_button import paste_image_button as pbutton
 from streamlit_paste_button import paste_image_button as pbutton
+
+paste_result = pbutton("📋 Paste an image")
+
+if paste_result.image_data is not None:
+    st.write('Pasted image:')
+    st.image(paste_result.image_data)
 
 
 
@@ -82,8 +89,11 @@ uploaded_file = st.file_uploader("Upload an image or paste from clipboard", type
 # pasted_image = paste_image()  # Added support for direct clipboard pasting - 0310
 paste_result = pbutton("📋 Paste an image")  # Updated to use correct function for pasting images - 0310
 
-if pasted_image is not None:
-    uploaded_file = pasted_image  # Override uploaded_file if clipboard image is detected - 0310
+# if pasted_image is not None:
+#     uploaded_file = pasted_image  # Override uploaded_file if clipboard image is detected - 0310
+if paste_result.image_data is not None:  # Corrected variable name for pasted image - 0310
+    uploaded_file = paste_result.image_data  # Use correct attribute for clipboard pasting - 0310  # Enabled clipboard paste support for images - 0310  # Allow users to upload images for AI processing - 0310
+
     
 if uploaded_file:
     image = Image.open(uploaded_file)
